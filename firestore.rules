@@ -1,0 +1,95 @@
+// ===============================================================
+// Assumed Data Model
+// ===============================================================
+//
+// Collection: users
+// Document ID: userId (Firebase Auth UID)
+// Fields:
+//   - uid: string (required)
+//   - email: string (required)
+//   - displayName: string
+//   - role: string (student, recruiter, admin)
+//   - skills: list of strings
+//   - cgpa: number
+//   - branch: string
+//   - resumeUrl: string
+//   - resumeText: string
+//   - createdAt: timestamp
+//
+// Collection: jobs
+// Document ID: jobId
+// Fields:
+//   - title: string
+//   - company: string
+//   - description: string
+//   - requirements: list of strings
+//   - postedBy: string (recruiter UID)
+//   - status: string (active, closed)
+//   - createdAt: timestamp
+//
+// Collection: applications
+// Document ID: appId
+// Fields:
+//   - jobId: string
+//   - studentId: string
+//   - status: string (applied, shortlisted, etc.)
+//   - matchScore: number
+//   - appliedAt: timestamp
+//
+// ===============================================================
+
+rules_version = '2';
+service cloud.firestore {
+  match /databases/{database}/documents {
+    
+    // Helper Functions
+    function isAuthenticated() {
+      return request.auth != null;
+    }
+    
+    function isOwner(userId) {
+      return isAuthenticated() && request.auth.uid == userId;
+    }
+    
+    function isAdmin() {
+      return isAuthenticated() && 
+        (get(/databases/$(database)/documents/users/$(request.auth.uid)).data.role == 'admin' ||
+         (request.auth.token.email == "sakshi14506@gmail.com" && request.auth.token.email_verified == true));
+    }
+    
+    function isRecruiter() {
+      return isAuthenticated() && get(/databases/$(database)/documents/users/$(request.auth.uid)).data.role == 'recruiter';
+    }
+
+    // User Profiles
+    match /users/{userId} {
+      allow read: if isAuthenticated();
+      allow create: if isOwner(userId) && request.resource.data.role in ['student', 'recruiter'];
+      allow update: if isOwner(userId) || isAdmin();
+    }
+
+    // Jobs
+    match /jobs/{jobId} {
+      allow read: if isAuthenticated();
+      allow create: if isRecruiter() || isAdmin();
+      allow update: if isRecruiter() && resource.data.postedBy == request.auth.uid || isAdmin();
+      allow delete: if isAdmin();
+    }
+
+    // Applications
+    match /applications/{appId} {
+      allow read: if isAuthenticated() && (
+        request.auth.uid == resource.data.studentId || 
+        isRecruiter() || 
+        isAdmin()
+      );
+      allow create: if isAuthenticated() && request.auth.uid == request.resource.data.studentId;
+      allow update: if isRecruiter() || isAdmin();
+    }
+
+    // Chats
+    match /chats/{chatId}/messages/{msgId} {
+      allow read, write: if isAuthenticated();
+    }
+  }
+}

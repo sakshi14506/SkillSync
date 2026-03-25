@@ -1,0 +1,89 @@
+{
+  "entities": {
+    "User": {
+      "title": "User Profile",
+      "description": "Stores student, recruiter, and admin profile information.",
+      "type": "object",
+      "properties": {
+        "uid": { "type": "string" },
+        "email": { "type": "string", "format": "email" },
+        "displayName": { "type": "string" },
+        "role": { "type": "string", "enum": ["student", "recruiter", "admin"] },
+        "photoURL": { "type": "string" },
+        "skills": { "type": "array", "items": { "type": "string" } },
+        "cgpa": { "type": "number" },
+        "branch": { "type": "string" },
+        "resumeUrl": { "type": "string" },
+        "resumeText": { "type": "string" },
+        "bio": { "type": "string" },
+        "projects": { "type": "array", "items": { "type": "object" } },
+        "createdAt": { "type": "string", "format": "date-time" }
+      },
+      "required": ["uid", "email", "role"]
+    },
+    "Job": {
+      "title": "Job Opening",
+      "description": "Stores job and internship postings.",
+      "type": "object",
+      "properties": {
+        "id": { "type": "string" },
+        "title": { "type": "string" },
+        "company": { "type": "string" },
+        "location": { "type": "string" },
+        "type": { "type": "string", "enum": ["Full-time", "Internship"] },
+        "description": { "type": "string" },
+        "requirements": { "type": "array", "items": { "type": "string" } },
+        "salary": { "type": "string" },
+        "postedBy": { "type": "string" },
+        "createdAt": { "type": "string", "format": "date-time" },
+        "status": { "type": "string", "enum": ["active", "closed"] }
+      },
+      "required": ["title", "company", "postedBy"]
+    },
+    "Application": {
+      "title": "Job Application",
+      "description": "Tracks student applications for jobs.",
+      "type": "object",
+      "properties": {
+        "id": { "type": "string" },
+        "jobId": { "type": "string" },
+        "studentId": { "type": "string" },
+        "status": { "type": "string", "enum": ["applied", "shortlisted", "interviewing", "selected", "rejected"] },
+        "matchScore": { "type": "number" },
+        "appliedAt": { "type": "string", "format": "date-time" }
+      },
+      "required": ["jobId", "studentId", "status"]
+    },
+    "Message": {
+      "title": "Chat Message",
+      "description": "Messages between students and recruiters.",
+      "type": "object",
+      "properties": {
+        "id": { "type": "string" },
+        "senderId": { "type": "string" },
+        "receiverId": { "type": "string" },
+        "text": { "type": "string" },
+        "timestamp": { "type": "string", "format": "date-time" }
+      },
+      "required": ["senderId", "receiverId", "text"]
+    }
+  },
+  "firestore": {
+    "/users/{userId}": {
+      "schema": "User",
+      "description": "User profiles indexed by UID."
+    },
+    "/jobs/{jobId}": {
+      "schema": "Job",
+      "description": "Job postings."
+    },
+    "/applications/{appId}": {
+      "schema": "Application",
+      "description": "Applications tracking."
+    },
+    "/chats/{chatId}/messages/{msgId}": {
+      "schema": "Message",
+      "description": "Chat messages within a conversation."
+    }
+  }
+}

@@ -1,0 +1,123 @@
+@import "tailwindcss";
+
+@theme {
+  --color-primary: #6366f1;
+  --color-secondary: #a855f7;
+  --color-accent: #22d3ee;
+  
+  /* Theme-specific colors will be handled via CSS variables */
+  --color-bg: var(--bg-color);
+  --color-text: var(--text-color);
+  --color-card-bg: var(--card-bg);
+  --color-card-border: var(--card-border);
+  --color-nav-bg: var(--nav-bg);
+  
+  --font-sans: var(--font-family);
+}
+
+:root {
+  /* Dark Mode Defaults */
+  --bg-color: #030712;
+  --text-color: #cbd5e1; /* slate-300 */
+  --card-bg: rgba(17, 24, 39, 0.7); /* glass-bg */
+  --card-border: rgba(255, 255, 255, 0.08); /* glass-border */
+  --nav-bg: rgba(3, 7, 18, 0.8);
+  --font-family: "Inter", ui-sans-serif, system-ui, sans-serif;
+  --heading-color: #ffffff;
+  --letter-spacing: 0.01em;
+}
+
+.light {
+  --bg-color: #f8fafc; /* slate-50 */
+  --text-color: #334155; /* slate-700 */
+  --card-bg: #ffffff;
+  --card-border: #e2e8f0; /* slate-200 */
+  --nav-bg: rgba(248, 250, 252, 0.8);
+  --font-family: "Roboto", "Open Sans", ui-sans-serif, system-ui, sans-serif;
+  --heading-color: #0f172a; /* slate-900 */
+  --letter-spacing: normal;
+}
+
+@layer base {
+  body {
+    @apply bg-bg text-text font-sans antialiased selection:bg-primary/30 selection:text-white transition-colors duration-500;
+    font-feature-settings: "cv02", "cv03", "cv04", "cv11";
+    letter-spacing: var(--letter-spacing);
+  }
+
+  h1, h2, h3, h4, h5, h6 {
+    color: var(--heading-color);
+    @apply tracking-tight transition-colors duration-500;
+  }
+}
+
+@layer components {
+  .glass-card {
+    @apply bg-card-bg backdrop-blur-2xl border border-card-border rounded-3xl transition-all duration-500;
+    box-shadow: var(--card-shadow);
+  }
+  
+  :root {
+    --card-shadow: 0 20px 50px rgba(0,0,0,0.5);
+  }
+  
+  .light {
+    --card-shadow: 0 10px 30px rgba(0,0,0,0.05);
+  }
+  
+  .glass-nav {
+    @apply bg-nav-bg backdrop-blur-xl border-b border-card-border transition-all duration-500;
+  }
+  
+  .neon-glow {
+    @apply transition-shadow duration-500;
+    box-shadow: var(--neon-glow-shadow);
+  }
+  
+  :root {
+    --neon-glow-shadow: 0 0 20px rgba(99,102,241,0.3);
+  }
+  
+  .light {
+    --neon-glow-shadow: none;
+  }
+  
+  .neon-text {
+    @apply text-transparent bg-clip-text bg-gradient-to-r from-primary via-secondary to-accent transition-all duration-500;
+  }
+  
+  .input-field {
+    @apply w-full bg-slate-900/50 border border-slate-800 rounded-2xl px-4 py-3.5 text-sm text-white placeholder:text-slate-600 focus:outline-none focus:ring-2 focus:ring-primary/50 focus:border-primary/50 transition-all duration-300;
+  }
+  
+  .light .input-field {
+    @apply bg-white border-slate-200 text-slate-900 placeholder:text-slate-400;
+  }
+
+  .label-text {
+    @apply text-[10px] font-bold text-slate-500 uppercase tracking-widest mb-2 block transition-colors duration-500;
+  }
+}
+
+/* Custom scrollbar */
+::-webkit-scrollbar {
+  width: 6px;
+}
+
+::-webkit-scrollbar-track {
+  @apply bg-slate-950;
+}
+
+::-webkit-scrollbar-thumb {
+  @apply bg-slate-800 rounded-full hover:bg-slate-700 transition-all;
+}
+
+/* Shimmer animation */
+@keyframes shimmer {
+  0% { transform: translateX(-100%); }
+  100% { transform: translateX(100%); }
+}
+
+.animate-shimmer {
+  animation: shimmer 2s infinite;
+}
